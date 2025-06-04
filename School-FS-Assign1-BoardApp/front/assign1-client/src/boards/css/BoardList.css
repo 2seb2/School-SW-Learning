@@ -1,0 +1,105 @@
+.boardList {
+    flex-direction: column;
+    flex: 1;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    border-radius: 8px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table th,
+.table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    min-width: fit-content;
+}
+
+.table th {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.table tbody tr:hover {
+    background-color: #f7f7f9;
+}
+
+#createPostBtn {
+    width: 100%;
+    /* background-color: #ffffff;
+    color: #333; */
+    background-color: #ffe9a8;
+    color: #333;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    outline: none; /* 포커스 시 파란색 테두리 제거 */
+}
+
+#createPostBtn:hover {
+    background-color: #fdd059;
+    color: #fff;
+}
+
+#createPostBtn:focus,
+#createPostBtn:active {
+    outline: none; /* 클릭 시 검정 테두리 제거 */
+    box-shadow: none; /* 클릭 시 추가 테두리 제거 */
+}
+
+/* 버튼을 가로로 정렬 */
+.table td .button-group {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-start;
+}
+
+.table td .button-group button {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #ced4da;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+    outline: none; /* 포커스 시 파란색 테두리 제거 */
+}
+
+.table td .button-group button:first-child {
+    background-color: #e1f5e1;
+    color: #333;
+}
+
+.table td .button-group button:last-child {
+    background-color: #fdeae7;
+    color: #333;
+}
+
+.table td .button-group button:first-child:hover {
+    background-color: #bfe1c0;
+    color: #fff;
+}
+
+.table td .button-group button:last-child:hover {
+    background-color: #df5842;
+    color: #fff;
+}
+
+.table td .button-group button:focus,
+.table td .button-group button:active {
+    outline: none; /* 클릭 시 검정 테두리 제거 */
+    box-shadow: none; /* 클릭 시 추가 테두리 제거 */
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace='boardsMapper'>
+    <select id='selectBoardList'>
+        SELECT 
+        article_no
+        , title
+        , content
+        , write_date
+        , write_id
+        FROM board
+        <if test="isArticleNo != null and isArticleNo != ''">
+            WHERE article_no = #{isArticleNo}
+        </if>
+        ORDER BY write_date DESC
+    </select>
+    <insert id="insertBoardInfo">
+        INSERT INTO board
+        (
+            title,
+            content,
+            write_date,
+            write_id
+        )
+        VALUES
+        (
+            #{is_Title},
+            #{is_Content},
+            DATE_FORMAT(now(), '%Y%m%d%H%i%s'),
+            #{is_WriteId}
+        )
+    </insert>
+    <update id="updateBoardInfo"> 
+        UPDATE board
+        SET
+            title = #{is_Title}
+            , content = #{is_Content}
+            , write_id = #{is_WriteId}
+            , write_date = DATE_FORMAT(now(), '%Y%m%d%H%i%s')
+        WHERE article_no = #{is_beforeArticleNo}
+    </update>
+    <delete id="deleteBoardInfo">
+        DELETE FROM board
+        WHERE article_no = #{is_ArticleNo}
+    </delete>
+</mapper>
