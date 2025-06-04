@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>글목록</title>
+	<style>
+		.cls2 {
+			text-align: center;
+			font-size: 30px;
+			display: block;
+		}
+
+		.cls1 {
+			text-decoration: none;
+		}
+	</style>
+</head>
+
+<body>
+	<a sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a>
+	<a sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
+	<a th:href="@{/user/signup}">회원가입</a>
+	<table align="center" border="1" width="80%">
+		<thead>
+			<tr height="10" align="center" bgcolor="lightgreen">
+				<th>글 번호</th>
+				<th>작성자</th>
+				<th>제목</th>
+				<th>작성일</th>
+			</tr>
+		</thead>
+		<tbody th:if="${#strings.isEmpty(dataList)}">
+			<tr height="10">
+				<td>
+					<p>
+						<b><span style="font-size: 9pt;">등록된 글이 없습니다.</span></b>
+					</p>
+				</td>
+			</tr>
+		</tbody>
+		<tbody th:unless="${#strings.isEmpty(dataList)}">
+			<tr align="center" th:each="article:${dataList}">
+				<td width="5%">[[${articleStat.count}]]</td>
+				<td width="10%">[[${article.writer.username}]]</td>
+				<td align="left" width="35%">
+					<span style="padding-right: 30px;"></span>
+					<a class="cls1" th:href="@{/notice/view(no=${article.id})}">[[${article.title}]]</a>
+				</td>
+				<td width="10%">[[${article.writeDate}]]</td>
+			</tr>
+		</tbody>
+	</table>
+	<a class="cls1" th:href="@{/notice/add}"><span class="cls2">글쓰기</span></a>
+</body>
+
+</html>

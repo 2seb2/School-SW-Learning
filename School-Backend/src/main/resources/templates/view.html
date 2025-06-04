@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		#tr_btn_modify {
+			display: none;
+		}
+
+		/* 댓글 수정 textarea 숨기기 */
+		.edit-comment {
+			display: none;
+		}
+	</style>
+
+	<script th:inline="javascript">
+		function backToList(frm) {
+			frm.action = "/notice/list";
+			frm.submit();
+		}
+		function fn_enable() {
+			document.querySelector('#i_title').disabled = false;
+			document.querySelector('#i_content').disabled = false;
+			document.querySelector('#tr_btn').style.display = 'none';
+			document.querySelector('#tr_btn_modify').style.display = 'table-row';
+		}
+		function fn_modify_article(frm) {
+			frm.action = "/notice/edit";
+			frm.submit();
+		}
+		function fn_remove(url, articleId) {
+			let form = document.createElement("form");
+			form.setAttribute("method", "post");
+			form.setAttribute("action", url);
+
+			let articleInput = document.createElement("input");
+			articleInput.setAttribute("type", "hidden");
+			articleInput.setAttribute("name", "articleNo");
+			articleInput.setAttribute("value", articleId);
+
+			form.appendChild(articleInput);
+			document.body.appendChild(form);
+			form.submit();
+		}
+
+
+		// 댓글 수정 모드 활성화
+		function enableEditComment(commentId) {
+			document.querySelector('#comment-view-' + commentId).style.display = 'none';
+			document.querySelector('#comment-edit-' + commentId).style.display = 'block';
+		}
+
+		// 댓글 수정 취소
+		function cancelEditComment(commentId) {
+			document.querySelector('#comment-view-' + commentId).style.display = 'block';
+			document.querySelector('#comment-edit-' + commentId).style.display = 'none';
+		}
+	</script>
+</head>
+
+<body>
+	<form name="articleForm" method="post" action="@{/}">
+		<table border="0" align="center">
+			<tbody>
+				<tr>
+					<td width="150" align="center" bgcolor="#FF9933">글번호</td>
+					<td>
+						<input type="text" th:value="${article.id}" disabled />
+						<input type="hidden" th:value="${article.id}" name="articleNo" />
+					</td>
+				</tr>
+				<tr>
+					<td width="150" align="center" bgcolor="#FF9933">작성자</td>
+					<td>
+						<input type="text" th:value="${article.writer.username}" name="writer" disabled />
+					</td>
+				</tr>
+				<tr>
+					<td width="150" align="center" bgcolor="#FF9933">제목</td>
+					<td>
+						<input type="text" th:value="${article.title}" name="title" id="i_title" disabled />
+					</td>
+				</tr>
+				<tr>
+					<td width="150" align="center" bgcolor="#FF9933">내용</td>
+					<td>
+						<textarea rows="20" cols="60" name="content" id="i_content"
+							disabled>[[${article.content}]]</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td width="20" align="center" bgcolor="#FF9933">작성일</td>
+					<td>
+						<input type="text" th:value="${article.writeDate}" disabled />
+					</td>
+				</tr>
+				<tr id="tr_btn">
+					<td colspan="2" align="center">
+						<input type="button" value="수정" onclick="fn_enable()" sec:authorize="isAuthenticated()"
+							th:if="${#authentication.getPrincipal().getUsername()==article.writer.username}" />
+						<input type="button" value="삭제" th:onclick="|fn_remove('@{/notice/remove}', '${article.id}')|"
+							sec:authorize="isAuthenticated()"
+							th:if="${#authentication.getPrincipal().getUsername()==article.writer.username}" />
+						<input type="button" value="목록보기" onclick="backToList(articleForm)" />
+					</td>
+				</tr>
+				<tr id="tr_btn_modify">
+					<td colspan="2" align="center">
+						<input type="button" value="저장" onclick="fn_modify_article(articleForm)" />
+						<input type="button" value="취소" onclick="backToList(articleForm)" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+
+
+	<!-- 댓글 작성 폼 -->
+	<div sec:authorize="isAuthenticated()">
+		<h3>댓글 작성</h3>
+		<form th:action="@{/comment/add}" method="post">
+			<textarea name="content" rows="4" cols="50" placeholder="댓글을 입력하세요"></textarea>
+			<input type="hidden" name="boardId" th:value="${article.id}" />
+			<button type="submit">댓글 작성</button>
+		</form>
+	</div>
+
+	<!-- 댓글 영역 추가 -->
+	<div>
+		<h3>댓글</h3>
+		<ul>
+			<li th:each="comment : ${article.comments}">
+				<!-- 댓글 내용 보기 모드 -->
+				<div id="comment-view" th:id="'comment-view-' + ${comment.id}">
+					<p th:text="${comment.content}">댓글 내용</p>
+					<p>작성자: <span th:text="${comment.writer.username}">작성자 이름</span></p> <!-- 작성자 이름 출력 -->
+					<button type="button" th:onclick="'enableEditComment(' + ${comment.id} + ')' "
+						th:if="${#authorization.expression('isAuthenticated()') and #authentication.getPrincipal().getUsername() == comment.writer.username}">
+						수정
+					</button>
+					<button type="button" th:onclick="|fn_remove('@{/comment/remove}', ${comment.id}, ${article.id})|"
+						th:if="${#authorization.expression('isAuthenticated()') and #authentication.getPrincipal().getUsername() == comment.writer.username}">
+						삭제
+					</button>
+
+				</div>
+
+				<!-- 댓글 수정 모드 -->
+				<div id="comment-edit" th:id="'comment-edit-' + ${comment.id}" class="edit-comment">
+					<form th:action="@{/comment/edit}" method="post">
+						<textarea name="content" th:text="${comment.content}"></textarea>
+						<input type="hidden" name="commentId" th:value="${comment.id}" />
+						<input type="hidden" name="boardId" th:value="${article.id}" />
+						<button type="submit">저장</button>
+						<button type="button" th:onclick="'cancelEditComment(' + ${comment.id} + ')'">취소</button>
+					</form>
+				</div>
+			</li>
+		</ul>
+	</div>
+</body>
+
+</html>
